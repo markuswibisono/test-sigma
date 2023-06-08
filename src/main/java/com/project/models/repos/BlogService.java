@@ -48,4 +48,9 @@ public class BlogService {
       blogRepo.deleteById(id);
   }
  
+  public Iterable <Blog> findByName(String name, Pageable pageable) {
+    return blogRepo.findByNameContains(name, pageable);
+  }
+
+  
 }

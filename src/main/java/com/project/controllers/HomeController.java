@@ -4,6 +4,9 @@ package com.project.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.models.entites.Blog;
 import com.project.models.entites.ResponseDelete;
 import com.project.models.entites.ResponseInsert;
+import com.project.models.entites.SearchData;
 import com.project.models.repos.BlogService;
 
-
+import org.springframework.data.domain.Page;
 @RestController
 @RequestMapping("/api/blogs")
 public class HomeController {
@@ -79,5 +83,29 @@ public class HomeController {
     }
 
  
-    
+    @PostMapping("/search/{size}/{page}")
+    public Iterable<Blog> findByName(@RequestBody SearchData searchData, @PathVariable("size") int size, @PathVariable("page") int page)  {
+
+        PageRequest pageable = PageRequest.of(page, size);
+
+        return blogService.findByName(searchData.getSearchKey(), pageable);
+
+    }
+
+    @PostMapping("/search/{size}/{page}/{sort}")
+    public Iterable<Blog> findByName(@RequestBody SearchData searchData, @PathVariable("size") int size,
+                                     @PathVariable("page") int page,@PathVariable("sort") String sort )  {
+
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("id"));
+
+        if(sort.equalsIgnoreCase("desc")) {
+
+            pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        }
+
+        
+        return blogService.findByName(searchData.getSearchKey(), pageable);
+
+    }
 }
